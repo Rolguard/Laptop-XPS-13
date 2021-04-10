@@ -101,3 +101,6 @@ except FileNotFoundError:
     f = open("budget_data.txt", "w")
     f.close()
     print("budget_data does not exist in the current directory and will now be created.")
+
+
+# Testing if changes are being applied to Github repository

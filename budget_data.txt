@@ -2,3 +2,5 @@
 {"Electricity bills": "300"}
 {"Movies": "50"}
 {"Clothes": "165.50"}
+{"Games": "200"}
+{"Toys": "150"}

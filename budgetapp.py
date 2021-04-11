@@ -22,48 +22,37 @@ class BudgetApp:
     def __init__(self, budget_category_data):
         self.budget_category_data = budget_category_data
 
-    # Returns list of dictionaries containing category and balance as key-value pairs
-    # def load_budget_data(self):
-    #     category_data_lines = []
-    #     for line in self.budget_category_data:
-    #         dictionary_data = json.loads(line)
-    #         category_data_lines.append(dictionary_data)
-    #
-    #     return category_data_lines
-    #
-    # def update_budget_data(self, data):
-    #     # Checks if file is empty, so that newline is formatted correctly i.e no \n at start of empty file
-    #     if os.path.getsize("budget_data.txt") > 0:
-    #         self.budget_category_data.write("\n")
-    #         json.dump(data, self.budget_category_data)
-    #
-    #     else:
-    #         json.dump(data, self.budget_category_data)
-
     def create_category(self):
         new_category = input("Please insert your new budget category here: ")
         new_category_balance = input("Please insert the balance you want to set for this category "
                                      "(excluding dollar sign): ")
-        unique_category = False
-        valid_category_value = False
+        unique_category = True
+        valid_category_value = True
 
-        if is_number(new_category_balance):
-            valid_category_value = True
+        if not is_number(new_category_balance):
+            valid_category_value = False
 
+        category_data_lines = []
+        # Need to remove \n can be done using .splitlines(), .rstrip()
         # Parses json data into python dictionaries in a list, taking note of repeated category names and invalid values
-        # category_data_lines = self.load_budget_data()
+        for line in self.budget_category_data:
+            dictionary_data = json.loads(line)
+            category_data_lines.append(dictionary_data)
 
-        # for category_dict in category_data_lines:
-        #     if new_category in category_dict.keys():
-        #         unique_category = False
+            if new_category in dictionary_data.keys():
+                unique_category = False
 
         if unique_category and valid_category_value:
             new_category_dict = {new_category: new_category_balance}
-
             print("Your new category and balance have been saved in budget_data.")
 
             # Checks if file is empty, so that newline is formatted correctly i.e no \n at start of empty file
-            # self.update_budget_data(new_category_dict)
+            if os.path.getsize("budget_data.txt") > 0:
+                self.budget_category_data.write("\n")
+                json.dump(new_category_dict, self.budget_category_data)
+
+            else:
+                json.dump(new_category_dict, self.budget_category_data)
 
         elif not unique_category:
             print("That category already exists.")
@@ -75,41 +64,16 @@ class BudgetApp:
             print("Error in loading budget_data.")
 
     def check_balance(self):
-        category_type = input("Please type which category you would like to see the balance of: ")
-        unregistered_category = True
-        category_data_lines = self.load_budget_data()
-        for category_dict in category_data_lines:
-            if category_type in category_dict.keys():
-                unregistered_category = False
-                category_balance = category_dict[category_type]
-                print(f"The balance for {category_type} is {category_balance}.")
+        # category_balance_check = input("Please type which category you would like to see the balance of: ")
 
-        if unregistered_category:
-            print("The balance could not be found due to the program not recognising the category. \n"
-                  "Please create the category first before asking for its balance.")
+        # Might need to do json.loads to load the budget_data again like in create_category
 
-    def delete_category(self):
-        category_data_lines = self.load_budget_data()
-        # if category_data_lines == []:
-        #    print("You currently do not have any categories in budget_data.")
+        # category_balance = self.budget_category_data[category]
+        # print(f"The balance for {category} is {category_balance}")
+        pass
 
-        # need to actually load budget_data with json and make changes accordingly
-        # Might have to do the removal and then put new information in again
-
-        # Redo the structure of the data given into the .txt file so that it contains
-        # A list of dictionaries and thus can be iterated through and list methods may be used such as .remove()
-        # Make sure it is in proper json format with {{key: value}, {key2: value}} and .json file
-
-        print(f"Here is a list of the current budget categories: {category_data_lines}")
-        category = input("Please type which category you would like to remove: ")
-
-        for category_dict in category_data_lines:
-            if category in category_dict.keys():
-                category_data_lines.remove(category_dict)
-
-        print(f"Here is the updated list of the budget categories: {category_data_lines}")
-
-        # Can find its index and then remove dict based on index or use remove()
+    def delete_category(self, category):
+        self.budget_category_data.pop(category)
 
     def deposit(self, category):
         deposit_amount = input("Please insert the amount you wish to deposit: ")
@@ -120,7 +84,6 @@ class BudgetApp:
     def transfer_balance(self, ):
         pass
 
-# Use a main function and if "__name__" = "__main__" then main()
 
 try:
     with open("budget_data.txt", "r+") as budget_data:
@@ -130,7 +93,7 @@ try:
         # allowing you to append data
         new_budget = BudgetApp(budget_data)
 
-        new_budget.delete_category()
+        new_budget.create_category()
 
 
 except FileNotFoundError:
@@ -141,3 +104,4 @@ except FileNotFoundError:
 
 
 # Testing if changes are being applied to Github repository
+# Testing changes #2 for Github repository

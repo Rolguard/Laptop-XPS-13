@@ -26,28 +26,34 @@ class BudgetApp:
         new_category = input("Please insert your new budget category here: ")
         new_category_balance = input("Please insert the balance you want to set for this category "
                                      "(excluding dollar sign): ")
-        unique_category = True
-        valid_category_value = True
+        unique_category = False
+        valid_category_value = False
 
-        if not is_number(new_category_balance):
-            valid_category_value = False
+        if is_number(new_category_balance):
+            valid_category_value = True
 
-        category_data_lines = []
+        # category_data_lines = []
         # Need to remove \n can be done using .splitlines(), .rstrip()
         # Parses json data into python dictionaries in a list, taking note of repeated category names and invalid values
-        for line in self.budget_category_data:
-            dictionary_data = json.loads(line)
-            category_data_lines.append(dictionary_data)
+        # for line in self.budget_category_data:
+        #     dictionary_data = json.loads(line)
+        #     category_data_lines.append(dictionary_data)
+        #
+        #     if new_category in dictionary_data.keys():
+        #         unique_category = True
 
-            if new_category in dictionary_data.keys():
-                unique_category = False
+        # Take in user_input and convert to json string with a formatted string?
+        # I want one big list containing dictionaries in a .json file
+        # Need to create an empty array (python list) in .json file if empty,
+        # Then add dictionaries converted into json objects into the list
+        # Enables me to iterate over the dictionaries
 
         if unique_category and valid_category_value:
             new_category_dict = {new_category: new_category_balance}
             print("Your new category and balance have been saved in budget_data.")
 
             # Checks if file is empty, so that newline is formatted correctly i.e no \n at start of empty file
-            if os.path.getsize("budget_data.txt") > 0:
+            if os.path.getsize("budget_data.json") > 0:
                 self.budget_category_data.write("\n")
                 json.dump(new_category_dict, self.budget_category_data)
 
@@ -86,7 +92,7 @@ class BudgetApp:
 
 
 try:
-    with open("budget_data.txt", "r+") as budget_data:
+    with open("budget_data.json", "r+") as budget_data:
         # a+ puts the stream position at the end of the file, meaning if you need to read it won't return anything
         # Unless you use .seek(0) to move the file pointer to the beginning of the file
         # r+ has the file pointer at the start of the file which moves to the end of the file after reading,
@@ -98,7 +104,7 @@ try:
 
 except FileNotFoundError:
     # w+ gives permission for both reading and writing
-    f = open("budget_data.txt", "w")
+    f = open("budget_data.json", "w")
     f.close()
     print("budget_data does not exist in the current directory and will now be created.")
 

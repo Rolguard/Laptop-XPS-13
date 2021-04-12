@@ -1,4 +1,0 @@
-{"Food": "400"}
-{"Electricity bills": "300"}
-{"Movies": "50"}
-{"Clothes": "165.50"}

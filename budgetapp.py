@@ -26,13 +26,14 @@ class BudgetApp:
         new_category = input("Please insert your new budget category here: ")
         new_category_balance = input("Please insert the balance you want to set for this category "
                                      "(excluding dollar sign): ")
-        unique_category = False
+        unique_category = True
         valid_category_value = False
 
         if is_number(new_category_balance):
             valid_category_value = True
 
-        # category_data_lines = []
+        json_data = []
+
         # Need to remove \n can be done using .splitlines(), .rstrip()
         # Parses json data into python dictionaries in a list, taking note of repeated category names and invalid values
         # for line in self.budget_category_data:
@@ -50,15 +51,19 @@ class BudgetApp:
 
         if unique_category and valid_category_value:
             new_category_dict = {new_category: new_category_balance}
+            json_data.append(new_category_dict)
             print("Your new category and balance have been saved in budget_data.")
 
             # Checks if file is empty, so that newline is formatted correctly i.e no \n at start of empty file
+            # Currently not saving data but only saving part of list
             if os.path.getsize("budget_data.json") > 0:
-                self.budget_category_data.write("\n")
-                json.dump(new_category_dict, self.budget_category_data)
+                json.dump(json_data, self.budget_category_data)
+                print("1")
 
             else:
-                json.dump(new_category_dict, self.budget_category_data)
+                self.budget_category_data.write("\n")
+                json.dump(json_data, self.budget_category_data)
+                print("2")
 
         elif not unique_category:
             print("That category already exists.")

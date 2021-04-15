@@ -1,5 +1,5 @@
 # Create a budget class that can create an instance of (instantiate) objects on different budget categories
-# where you can create categories e.g. food, entertainment, clothing (maybe not)
+# where you can create categories e.g. food, entertainment, clothing
 # Should be able to deposit and withdraw funds from each category, as well as calculate balances and
 # transfer balance amounts between categories
 # Plan to use tkinter to provide a GUI after doing this without it
@@ -30,40 +30,22 @@ class BudgetApp:
         valid_category_value = False
 
         if is_number(new_category_balance):
+            new_category_balance = float(new_category_balance)
             valid_category_value = True
-
-        json_data = []
-
-        # Need to remove \n can be done using .splitlines(), .rstrip()
-        # Parses json data into python dictionaries in a list, taking note of repeated category names and invalid values
-        # for line in self.budget_category_data:
-        #     dictionary_data = json.loads(line)
-        #     category_data_lines.append(dictionary_data)
-        #
-        #     if new_category in dictionary_data.keys():
-        #         unique_category = True
-
-        # Take in user_input and convert to json string with a formatted string?
-        # I want one big list containing dictionaries in a .json file
-        # Need to create an empty array (python list) in .json file if empty,
-        # Then add dictionaries converted into json objects into the list
-        # Enables me to iterate over the dictionaries
 
         if unique_category and valid_category_value:
             new_category_dict = {new_category: new_category_balance}
-            json_data.append(new_category_dict)
             print("Your new category and balance have been saved in budget_data.")
 
-            # Checks if file is empty, so that newline is formatted correctly i.e no \n at start of empty file
-            # Currently not saving data but only saving part of list
-            if os.path.getsize("budget_data.json") > 0:
-                json.dump(json_data, self.budget_category_data)
-                print("1")
+            # Checks if file is empty
+            if os.path.getsize("budget_data.json") == 0:
+                json.dump(new_category_dict, self.budget_category_data)
 
             else:
-                self.budget_category_data.write("\n")
-                json.dump(json_data, self.budget_category_data)
-                print("2")
+                category_data = json.load(self.budget_category_data)
+                category_data.update(new_category_dict)
+                self.budget_category_data.seek(0)
+                json.dump(category_data, self.budget_category_data, indent=2)
 
         elif not unique_category:
             print("That category already exists.")
@@ -75,15 +57,23 @@ class BudgetApp:
             print("Error in loading budget_data.")
 
     def check_balance(self):
-        # category_balance_check = input("Please type which category you would like to see the balance of: ")
+        category_check = input("Please type which category you would like to see the balance of: ")
+        category_data = json.load(self.budget_category_data)
+        category_found = False
 
-        # Might need to do json.loads to load the budget_data again like in create_category
+        for key in category_data:
+            if category_check == key:
+                category_found = True
+                print(f"The balance for {key} is ${category_data[key]}")
 
-        # category_balance = self.budget_category_data[category]
-        # print(f"The balance for {category} is {category_balance}")
-        pass
+        if not category_found:
+            print("The category could not been found. Please try create the create the category first before "
+                  "accessing the balance.")
 
     def delete_category(self, category):
+        category_data = json.load(self.budget_category_data)
+        print("The current categories that are able to be deleted are:")
+        category_check = input("Please type which category you would like to delete: ")
         self.budget_category_data.pop(category)
 
     def deposit(self, category):
@@ -104,7 +94,7 @@ try:
         # allowing you to append data
         new_budget = BudgetApp(budget_data)
 
-        new_budget.create_category()
+        new_budget.check_balance()
 
 
 except FileNotFoundError:

@@ -1,1 +1,8 @@
-[{"Tyres": "200"}]}]]
+{
+  "Food": 300.0,
+  "Clothes": 400.0,
+  "Movies": 300.0,
+  "Video Games": 120.0,
+  "Golf": 200.0,
+  "Sport": 145.5
+}

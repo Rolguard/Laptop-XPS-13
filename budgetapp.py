@@ -23,26 +23,38 @@ class BudgetApp:
         self.budget_category_data = budget_category_data
 
     def create_category(self):
+        # Note that if I wanted to make several json objects {} , {} then these would need to be stored in a json]
+        # array i.e. [{key1:value1}, {key2:value2}, {key3:value3}]
         new_category = input("Please insert your new budget category here: ")
         new_category_balance = input("Please insert the balance you want to set for this category "
                                      "(excluding dollar sign): ")
+        empty_file = False
         unique_category = True
         valid_category_value = False
+
+        if os.path.getsize("budget_data.json") == 0:
+            empty_file = True
 
         if is_number(new_category_balance):
             new_category_balance = float(new_category_balance)
             valid_category_value = True
 
+        if not empty_file:
+            # Check if unique category
+            category_data = json.load(self.budget_category_data)
+            for key in category_data:
+                if new_category == key:
+                    unique_category = False
+                    break
+
         if unique_category and valid_category_value:
             new_category_dict = {new_category: new_category_balance}
             print("Your new category and balance have been saved in budget_data.")
 
-            # Checks if file is empty
-            if os.path.getsize("budget_data.json") == 0:
+            if empty_file:
                 json.dump(new_category_dict, self.budget_category_data)
 
             else:
-                category_data = json.load(self.budget_category_data)
                 category_data.update(new_category_dict)
                 self.budget_category_data.seek(0)
                 json.dump(category_data, self.budget_category_data, indent=2)
@@ -70,11 +82,32 @@ class BudgetApp:
             print("The category could not been found. Please try create the create the category first before "
                   "accessing the balance.")
 
-    def delete_category(self, category):
+    def delete_category(self):
+        # Category_data returns a dictionary
         category_data = json.load(self.budget_category_data)
-        print("The current categories that are able to be deleted are:")
+        valid_category = False
+        # Return a list of the keys of the dictionary
+        keys = list(category_data.keys())
+
+        print(f"The current categories that are able to be deleted are: {keys}")
         category_check = input("Please type which category you would like to delete: ")
-        self.budget_category_data.pop(category)
+
+        for category_key in category_data:
+            if category_key == category_check:
+                valid_category = True
+                category_data.pop(category_check)
+                break
+
+        if valid_category:
+            self.budget_category_data.seek(0)
+            json.dump(category_data, self.budget_category_data, indent=2)
+            # Truncate shortens the file to the current file position, used since updated data is smaller than original
+            self.budget_category_data.truncate()
+            print(f"{category_check} has been successfully deleted.")
+
+        else:
+            print(f"The category {category_check} could not be found. Please check you have created the category "
+                  "before deleting it.")
 
     def deposit(self, category):
         deposit_amount = input("Please insert the amount you wish to deposit: ")
@@ -94,7 +127,7 @@ try:
         # allowing you to append data
         new_budget = BudgetApp(budget_data)
 
-        new_budget.check_balance()
+        new_budget.create_category()
 
 
 except FileNotFoundError:
@@ -102,7 +135,3 @@ except FileNotFoundError:
     f = open("budget_data.json", "w")
     f.close()
     print("budget_data does not exist in the current directory and will now be created.")
-
-
-# Testing if changes are being applied to Github repository
-# Testing changes #2 for Github repository

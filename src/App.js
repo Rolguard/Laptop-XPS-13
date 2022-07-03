@@ -4,7 +4,7 @@ import Tasks from './components/Tasks'
 import AddTask from './components/AddTask'
 
 function App() {
-
+  const [showAddTask, setShowAddTask] = useState(false)
   // Name of the state is tasks, function to update the state is setTasks
   // State is immutable
   // useState returns the current state value (tasks) and a function for update the state (setTasks)
@@ -29,6 +29,15 @@ function App() {
     },
 
   ])
+  const addTask = (task) => {
+    const id = Math.floor(Math.random() * 10000) + 1
+    // Create a newTask variable which is a JSON string with id, and the spread notation of task (copy of all the json object literals
+    // I.e. Copy of all the key-value pairs)
+    const newTask = { id, ...task }
+    // Copy current json object literals of tasks and also add the new task as
+    setTasks([...tasks, newTask])
+  }
+
 
   const deleteTask = (id) => {
     // filter, an array method, takes in a function
@@ -49,9 +58,11 @@ function App() {
 
   return (
     <div className="container">
-      <Header title={'Task Tracker'} />
-      <AddTask />
-      {/* Take tasks and pass into the Tasks component as a prop
+      {/* () => function() (=> is the arrow function) passes the function to the prop onAdd */}
+      <Header onAdd={() => setShowAddTask(!showAddTask)} showAdd={showAddTask} />
+      {/* Shorthand of saying if condition is True then AddTask, can use instead of ? , : since we don't need else */}
+      {showAddTask && <AddTask onAdd={addTask} />}
+      {/* Take tasks and pass into the Tasks component as a prop, prop=parameter/argument
         If tasks is greater than 0 display Tasks component
         else display message
       */}

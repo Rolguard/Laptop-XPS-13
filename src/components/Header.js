@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
 import Button from './Button'
+import { useLocation } from 'react-router-dom'
 
 // Props are given to function/object, can use props.title or do {title} to destructure
 const Header = ({ title, onAdd, showAdd }) => {
-
+    const location = useLocation()
 
     return (
         <header className='header'>
@@ -14,9 +15,12 @@ const Header = ({ title, onAdd, showAdd }) => {
             backgroundColor, keywords in JS such as class in html become className
 
             Header component contains the button component which takes in the props of color, text and onClick
+
+            Add button only shown if the location is home i.e. localhost:3000
             */}
             <h1>{title}</h1>
-            <Button color={showAdd ? 'red' : 'green'} text={showAdd ? 'Close' : 'Add'} onClick={onAdd} />
+
+            {location.pathname === '/' && <Button color={showAdd ? 'red' : 'green'} text={showAdd ? 'Close' : 'Add'} onClick={onAdd} />}
         </header>
     )
 }
